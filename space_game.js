@@ -124,12 +124,14 @@ const levels = [
 .....
 ..p..
 .....`,
-  map``
+  map`
+e`
 ]
 
 setMap(levels[0]);
 let count = 0
-
+let dead = false;
+let xval = 0;
 
 setPushables({
   [player]: [cargo]
@@ -157,15 +159,53 @@ function checkCollision() {
   {
     if (count < 1) {
       playTune(boom);
+      dead = true;
+      // setMap(levels[1]);
       count += 1;
+    }
+  }
+  else {
+    
+  }
+}
+
+function addMissile() {
+  xval = Math.floor(Math.random() * 5);
+  let yval = 0;
+
+  addSprite(xval, yval, missile);
+}
+
+function deleteMissile() {
+  clearTile(0, 5);
+  clearTile(1, 5);
+  clearTile(2, 5);
+  clearTile(3, 5);
+  clearTile(4, 5);
+}
+
+function clear() {
+  for (let i = 0; i < 5; i++) {
+    for (let j = 0; j < 6; j++) {
+      clearTile(i, j);
     }
   }
 }
 
-setInterval(moveMissiles, 1000);
-setInterval(checkCollision, 20);
+if (!dead) {
+  const move = setInterval(moveMissiles, 1000);
+  const check = setInterval(checkCollision, 20);
+  const deleteTheMissiles = setInterval(deleteMissile, 20);
+  const add = setInterval(addMissile, 6000);
+}
 
+else {
+  // xval = 0;
+  clearInterval(move);
+  clearInterval(check);
+  clearInterval(deleteTheMissiles);
+  clearInterval(add);
+}
 
 afterInput(() => {
-  // addText(getFirst(player).x + " " + getFirst(player).y);
 })
