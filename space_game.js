@@ -132,14 +132,12 @@ setMap(levels[0]);
 let count = 0
 let dead = false;
 let xval = 0;
+let changed = false;
+let difficulty = 6000;
 
 setPushables({
   [player]: [cargo]
 });
-
-onInput("s", () => {
-  getFirst(player).y += 1
-})
 
 onInput("a", () => {
   if (getFirst(player).x > -1) getFirst(player).x -= 1;
@@ -147,6 +145,16 @@ onInput("a", () => {
 
 onInput("d", () => {
   if (getFirst(player).x < 5) getFirst(player).x += 1;
+});
+
+onInput("k", () => {
+  if (difficulty < 10000 && difficulty > 100) difficulty = difficulty / 15;
+  changed = true;
+});
+
+onInput("i", () => {
+  if (difficulty < 10000 && difficulty > 100) difficulty = difficulty * 15;
+  changed = true;
 });
 
 function moveMissiles() {
@@ -160,7 +168,7 @@ function checkCollision() {
     if (count < 1) {
       playTune(boom);
       dead = true;
-      // setMap(levels[1]);
+      setMap(levels[1]);
       count += 1;
     }
   }
@@ -170,10 +178,11 @@ function checkCollision() {
 }
 
 function addMissile() {
-  xval = Math.floor(Math.random() * 5);
-  let yval = 0;
-
-  addSprite(xval, yval, missile);
+    let yval = 0;
+    xval = Math.floor(Math.random() * 5);
+  if (!dead) {
+      addSprite(xval, yval, missile);
+  }
 }
 
 function deleteMissile() {
@@ -185,11 +194,12 @@ function deleteMissile() {
 }
 
 function clear() {
-  for (let i = 0; i < 5; i++) {
-    for (let j = 0; j < 6; j++) {
-      clearTile(i, j);
-    }
-  }
+  // for (let i = 0; i < 5; i++) {
+  //   for (let j = 0; j < 6; j++) {
+  //     clearTile(i, j);
+  //   }
+  // }
+  clearTile(0, 0);
 }
 
 if (!dead) {
@@ -198,13 +208,21 @@ if (!dead) {
   const deleteTheMissiles = setInterval(deleteMissile, 20);
   const add = setInterval(addMissile, 6000);
 }
-
 else {
   // xval = 0;
+  setInterval(clear, 20);
   clearInterval(move);
   clearInterval(check);
   clearInterval(deleteTheMissiles);
   clearInterval(add);
+}
+
+function changeSpeed() {
+  if (changed) {
+    clearInterval(move);
+    const move = setInverval(moveMissile, difficulty)
+    changed = false;
+  }
 }
 
 afterInput(() => {
