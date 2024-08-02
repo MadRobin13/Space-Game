@@ -27,22 +27,22 @@ const boom = tune`
 
 setLegend(
   [player, bitmap`
-................
-................
-.......00.......
-......0660......
-.....055550.....
-....05533550....
-...0553773550...
-..055777777550..
-.05557700775550.
-.06557033075560.
-..000033330000..
-.......99.......
-......9999......
-.....9.99.9.....
-................
-................`],
+0000000000000000
+0000000000000000
+0000000000000000
+0000000660000000
+0000005555000000
+0000055335500000
+0000553773550000
+0005577777755000
+0055577007755500
+0065570330755600
+0000003333000000
+0000000990000000
+0000009999000000
+0000090990900000
+0000000000000000
+0000000000000000`],
   [space, bitmap`
 0000000000000000
 0000000000000000
@@ -78,22 +78,22 @@ setLegend(
 0665555555555660
 0000000000000000`],
   [missile, bitmap`
-....9.9..9.9....
-.....999999.....
-....3333333C....
-.....66666F.....
-.....66666F.....
-.....66666F.....
-.....66666F.....
-.....66666F.....
-.....66666F.....
-.....66666F.....
-.....66666F.....
-.....33333C.....
-......333C......
-.......3C.......
-................
-................`],
+0000909009090000
+0000099999900000
+00003333333C0000
+0000066666F00000
+0000066666F00000
+0000066666F00000
+0000066666F00000
+0000066666F00000
+0000066666F00000
+0000066666F00000
+0000066666F00000
+0000033333C00000
+000000333C000000
+00000003C0000000
+0000000000000000
+0000000000000000`],
   [explosion, bitmap`
 0000000000000000
 0006969666996600
@@ -118,7 +118,7 @@ setSolids([player, cargo])
 let level = 0
 const levels = [
   map`
-..mm.
+..m..
 .....
 .....
 .....
@@ -133,7 +133,7 @@ let count = 0
 let dead = false;
 let xval = 0;
 let changed = false;
-let difficulty = 6000;
+let difficulty = 1000;
 
 setPushables({
   [player]: [cargo]
@@ -148,12 +148,12 @@ onInput("d", () => {
 });
 
 onInput("k", () => {
-  if (difficulty < 10000 && difficulty > 100) difficulty = difficulty / 15;
+  if (difficulty - 100 > 100) difficulty -= 100;
   changed = true;
 });
 
 onInput("i", () => {
-  if (difficulty < 10000 && difficulty > 100) difficulty = difficulty * 15;
+  if (difficulty + 100 < 10000) difficulty += 100;
   changed = true;
 });
 
@@ -186,11 +186,11 @@ function addMissile() {
 }
 
 function deleteMissile() {
-  clearTile(0, 5);
-  clearTile(1, 5);
-  clearTile(2, 5);
-  clearTile(3, 5);
-  clearTile(4, 5);
+  if (getTile(0, 5).length === 1)   clearTile(0, 5);
+  if (getTile(1, 5).length === 1)   clearTile(1, 5);
+  if (getTile(2, 5).length === 1)   clearTile(2, 5);
+  if (getTile(3, 5).length === 1)   clearTile(3, 5);
+  if (getTile(4, 5).length === 1)   clearTile(4, 5);
 }
 
 function clear() {
@@ -203,10 +203,12 @@ function clear() {
 }
 
 if (!dead) {
-  const move = setInterval(moveMissiles, 1000);
+  let move = setInterval(moveMissiles, 700);
   const check = setInterval(checkCollision, 20);
   const deleteTheMissiles = setInterval(deleteMissile, 20);
-  const add = setInterval(addMissile, 6000);
+  const add = setInterval(addMissile, difficulty);
+  // const addSpace = setInterval(setSpace, 1000);
+  // const diff = setInterval(changeSpeed(move), 10);
 }
 else {
   // xval = 0;
@@ -217,13 +219,25 @@ else {
   clearInterval(add);
 }
 
-function changeSpeed() {
-  if (changed) {
-    clearInterval(move);
-    const move = setInverval(moveMissile, difficulty)
-    changed = false;
+function setSpace() {
+
+  emptyTiles = tileWith();
+
+  for(let i = 0; i < emptyTiles.length; i++) {
+    addSprite(emtyTiles[i])
   }
+  
+  // for (let xval = 0; xval < 5; xval++) {
+  //   for (let yval = 0; yval < 6; yval++) {
+  //     if (getTile(xval, yval).length === 0) {
+  //       addSprite(xval, yval, space);
+  //     }
+  //   }
+  // }
 }
 
 afterInput(() => {
+  // addText(difficulty.toString());
+//   clearInterval(interval);
+//   const move = setInterval(moveMissile, difficulty)
 })
