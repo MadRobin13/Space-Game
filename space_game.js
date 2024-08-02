@@ -9,7 +9,6 @@ https://sprig.hackclub.com/gallery/getting_started
 */
 
 const player = "p"
-const space = "s";
 const cargo = "c";
 const missile = "m";
 const explosion = "e";
@@ -41,23 +40,6 @@ setLegend(
 0000000990000000
 0000009999000000
 0000090990900000
-0000000000000000
-0000000000000000`],
-  [space, bitmap`
-0000000000000000
-0000000000000000
-0000000000000200
-0000000000000000
-0000000000000000
-0000000000000000
-0002000000000000
-0000000000000000
-0000000000000000
-0000000000000000
-0000000000000000
-0000000000000000
-0000000000020000
-0000000000000000
 0000000000000000
 0000000000000000`],
   [cargo, bitmap`
@@ -95,25 +77,25 @@ setLegend(
 0000000000000000
 0000000000000000`],
   [explosion, bitmap`
-0000000000000000
+6060060006660006
 0006969666996600
 0069696666666900
 0666969999666660
 6069999399669960
 6069399933999660
 0699933333339600
-069333CCC3996600
+069333CCC3996606
 09399333C3996660
 0696933333996960
 0669399399396660
 6069966939996666
 0666669669666660
 0006696966696600
-0069666666666000
+6069666666666006
 0006066000000600`]
 )
 
-setSolids([player, cargo])
+setSolids([player])
 
 let level = 0
 const levels = [
@@ -134,10 +116,11 @@ let dead = false;
 let xval = 0;
 let changed = false;
 let difficulty = 1000;
+let time = 0;
 
-setPushables({
-  [player]: [cargo]
-});
+// setPushables({
+//   [player : ]
+// });
 
 onInput("a", () => {
   if (getFirst(player).x > -1) getFirst(player).x -= 1;
@@ -169,6 +152,7 @@ function checkCollision() {
       playTune(boom);
       dead = true;
       setMap(levels[1]);
+      clearText();
       count += 1;
     }
   }
@@ -185,6 +169,19 @@ function addMissile() {
   }
 }
 
+function addCargo() {
+    let yval = 0;
+    xval = Math.floor(Math.random() * 5);
+  if (!dead) {
+      addSprite(xval, yval, cargo);
+  }
+}
+
+function moveCargo() {
+  getAll(cargo).forEach((cargo) => {
+  cargo.y += 1; });
+}
+
 function deleteMissile() {
   if (getTile(0, 5).length === 1)   clearTile(0, 5);
   if (getTile(1, 5).length === 1)   clearTile(1, 5);
@@ -194,11 +191,6 @@ function deleteMissile() {
 }
 
 function clear() {
-  // for (let i = 0; i < 5; i++) {
-  //   for (let j = 0; j < 6; j++) {
-  //     clearTile(i, j);
-  //   }
-  // }
   clearTile(0, 0);
 }
 
@@ -207,7 +199,13 @@ if (!dead) {
   const check = setInterval(checkCollision, 20);
   const deleteTheMissiles = setInterval(deleteMissile, 20);
   const add = setInterval(addMissile, difficulty);
-  // const addSpace = setInterval(setSpace, 1000);
+  const addCar = setInterval(addCargo, 60000);
+  const moveCar = setInterval(moveCargo, 1000);
+  // const timed = setInterval(time = updateTimer(time), 100);
+  const timed = setInterval(() => {
+  time = updateTimer(time);
+  addText((time/10).toString());
+  }, 100);
   // const diff = setInterval(changeSpeed(move), 10);
 }
 else {
@@ -217,23 +215,14 @@ else {
   clearInterval(check);
   clearInterval(deleteTheMissiles);
   clearInterval(add);
+  clearInterval(addCar);
+  clearInterval(moveCar);
+  
 }
 
-function setSpace() {
-
-  emptyTiles = tileWith();
-
-  for(let i = 0; i < emptyTiles.length; i++) {
-    addSprite(emtyTiles[i])
-  }
-  
-  // for (let xval = 0; xval < 5; xval++) {
-  //   for (let yval = 0; yval < 6; yval++) {
-  //     if (getTile(xval, yval).length === 0) {
-  //       addSprite(xval, yval, space);
-  //     }
-  //   }
-  // }
+function updateTimer(timer) {
+  timer += 1;
+  return timer;
 }
 
 afterInput(() => {
