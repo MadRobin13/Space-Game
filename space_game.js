@@ -5,7 +5,7 @@ https://sprig.hackclub.com/gallery/getting_started
 @title: Space Game
 @author: 
 @tags: []
-@addedOn: 2024-08-02
+@addedOn: 2024-08-03
 */
 
 const player = "p"
@@ -23,6 +23,9 @@ const boom = tune`
 48.62236628849271: A4/48.62236628849271 + F4/48.62236628849271 + C4-48.62236628849271 + C5^48.62236628849271 + G4^48.62236628849271,
 48.62236628849271: E4/48.62236628849271 + C4-48.62236628849271 + D4^48.62236628849271,
 1118.3144246353322`;
+const move = tune`
+107.52688172043011: A4^107.52688172043011 + G4-107.52688172043011,
+3333.3333333333335`;
 
 setLegend(
   [player, bitmap`
@@ -116,7 +119,7 @@ let count = 0
 let dead = false;
 let xval = 0;
 let changed = false;
-let difficulty = false;
+let difficult = false;
 let time = 0;
 
 // setPushables({
@@ -169,7 +172,7 @@ function addCargo() {
     let yval = 0;
     xval = Math.floor(Math.random() * 5);
   if (!dead) {
-      addSprite(xval, yval, cargo);
+    if (!difficult) addSprite(xval, yval, cargo);
   }
 }
 
@@ -192,10 +195,12 @@ function clear() {
 
 onInput("a", () => {
   if (!dead) if (getFirst(player).x > -1) getFirst(player).x -= 1;
+  playTune(move);
 });
 
 onInput("d", () => {
   if (!dead) if (getFirst(player).x < 5) getFirst(player).x += 1;
+  playTune(move);
 });
 
   onInput("w", () => {
@@ -208,18 +213,13 @@ onInput("d", () => {
   });
 
 if (!dead) {
-  
   let move = setInterval(moveMissiles, 700);
   const check = setInterval(checkCollision, 20);
   const deleteTheMissiles = setInterval(deleteMissile, 20);
   const add = setInterval(addMissile, 700);
-
-  if (!difficulty) {
-    const addCar = setInterval(addCargo, 10000);
-    const moveCar = setInterval(moveCargo, 700);
-    const cargoCollide = setInterval(checkCargoCollision, 100);
-  }
-  
+  const addCar = setInterval(addCargo, 10000);
+  const moveCar = setInterval(moveCargo, 700);
+  const cargoCollide = setInterval(checkCargoCollision, 100);
   const timed = setInterval(() => {
     if (!dead) {
       time = updateTimer(time);
@@ -243,11 +243,11 @@ else {
 }
 
 onInput("k", () => {
-  difficulty = false;
+  difficult = false;
 });
 
 onInput("i", () => {
-  difficulty = true;
+  difficult = true;
 });
 
 function updateTimer(timer) {
