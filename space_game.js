@@ -2,10 +2,10 @@
 First time? Check out the tutorial game:
 https://sprig.hackclub.com/gallery/getting_started
 
-@title: Second Game
+@title: Space Game
 @author: 
 @tags: []
-@addedOn: 2024-00-00
+@addedOn: 2024-08-02
 */
 
 const player = "p"
@@ -26,56 +26,56 @@ const boom = tune`
 
 setLegend(
   [player, bitmap`
-0000000000000000
-0000000000000000
-0000000000000000
-0000000660000000
-0000005555000000
-0000055335500000
-0000553773550000
-0005577777755000
-0055577007755500
-0065570330755600
-0000003333000000
-0000000990000000
-0000009999000000
-0000090990900000
-0000000000000000
-0000000000000000`],
+................
+................
+................
+.......6F.......
+......7777......
+.....773C77.....
+....7734DC77....
+...7734DDDC77...
+..7774D11DD777..
+..655D1CC1D55F..
+......9339......
+.....669966.....
+....6.6..6.6....
+................
+................
+................`],
   [cargo, bitmap`
-0000000000000000
-0665555555555660
-0667777777777660
-057777333C777750
-057777333C777750
-057777333C777750
-057777333C777750
-057777333C777750
-057777333C777750
-0577777777777750
-057777333C777750
-057777333C777750
-057777333C777750
-0667777777777660
-0665555555555660
-0000000000000000`],
+................
+.....000000.....
+...30LLLLLL03...
+...CLLLLLLLLC...
+..0LL6LLLL6LL0..
+.0LLL6LLLL6LLL0.
+.0LLL6LLLL6LLL0.
+.0LLL666666LLL0.
+.0LLL6FFFF6LLL0.
+.0LLL6LLLL6LLL0.
+.0LLL6LLLL6LLL0.
+..03LFLLLLFL30..
+...CLLLLLLLLC...
+....0LLLLLL0....
+.....000000.....
+................`],
   [missile, bitmap`
-0000909009090000
-0000099999900000
-00003333333C0000
-0000066666F00000
-0000066666F00000
-0000066666F00000
-0000066666F00000
-0000066666F00000
-0000066666F00000
-0000066666F00000
-0000066666F00000
-0000033333C00000
-000000333C000000
-00000003C0000000
-0000000000000000
-0000000000000000`],
+....9.9..9.9....
+.....999999.....
+....3333333C....
+.....36636F.....
+.....63663F.....
+.....66366C.....
+.....36636F.....
+.....63663F.....
+.....66366C.....
+.....36636F.....
+.....63663F.....
+.....33333C.....
+......333C......
+.......3C.......
+................
+................`],
   [explosion, bitmap`
 6060060006660006
 0006969666996600
@@ -110,35 +110,19 @@ const levels = [
 e`
 ]
 
-setMap(levels[0]);
+level = 0;
+setMap(levels[level]);
 let count = 0
 let dead = false;
 let xval = 0;
 let changed = false;
-let difficulty = 1000;
+let difficulty = false;
 let time = 0;
 
 // setPushables({
 //   [player : ]
 // });
 
-onInput("a", () => {
-  if (getFirst(player).x > -1) getFirst(player).x -= 1;
-});
-
-onInput("d", () => {
-  if (getFirst(player).x < 5) getFirst(player).x += 1;
-});
-
-onInput("k", () => {
-  if (difficulty - 100 > 100) difficulty -= 100;
-  changed = true;
-});
-
-onInput("i", () => {
-  if (difficulty + 100 < 10000) difficulty += 100;
-  changed = true;
-});
 
 function moveMissiles() {
   getAll(missile).forEach((missile) => {
@@ -151,13 +135,25 @@ function checkCollision() {
     if (count < 1) {
       playTune(boom);
       dead = true;
-      setMap(levels[1]);
+      level = 1;
+      setMap(levels[level]);
       clearText();
       count += 1;
     }
   }
   else {
     
+  }
+}
+
+function checkCargoCollision() {
+  if (tilesWith(player, cargo).length === 1) {
+
+    for(let xval = 0; xval < 5; xval++) {
+      for(let yval = 0; yval < 6; yval++) {
+         if (getTile(xval, yval).some(sprite => sprite.type === missile)) clearTile(xval, yval);
+      }
+    }
   }
 }
 
@@ -183,33 +179,59 @@ function moveCargo() {
 }
 
 function deleteMissile() {
-  if (getTile(0, 5).length === 1)   clearTile(0, 5);
-  if (getTile(1, 5).length === 1)   clearTile(1, 5);
-  if (getTile(2, 5).length === 1)   clearTile(2, 5);
-  if (getTile(3, 5).length === 1)   clearTile(3, 5);
-  if (getTile(4, 5).length === 1)   clearTile(4, 5);
+  if (getTile(0, 5).length >= 1)   clearTile(0, 5);
+  if (getTile(1, 5).length >= 1)   clearTile(1, 5);
+  if (getTile(2, 5).length >= 1)   clearTile(2, 5);
+  if (getTile(3, 5).length >= 1)   clearTile(3, 5);
+  if (getTile(4, 5).length >= 1)   clearTile(4, 5);
 }
 
 function clear() {
   clearTile(0, 0);
 }
 
+onInput("a", () => {
+  if (!dead) if (getFirst(player).x > -1) getFirst(player).x -= 1;
+});
+
+onInput("d", () => {
+  if (!dead) if (getFirst(player).x < 5) getFirst(player).x += 1;
+});
+
+  onInput("w", () => {
+    if (level === 1) {
+      level = 0;
+      dead = false;
+      count = 0;
+      setMap(levels[level]);
+                     }
+  });
+
 if (!dead) {
+  
   let move = setInterval(moveMissiles, 700);
   const check = setInterval(checkCollision, 20);
   const deleteTheMissiles = setInterval(deleteMissile, 20);
-  const add = setInterval(addMissile, difficulty);
-  const addCar = setInterval(addCargo, 60000);
-  const moveCar = setInterval(moveCargo, 1000);
-  // const timed = setInterval(time = updateTimer(time), 100);
+  const add = setInterval(addMissile, 700);
+
+  if (!difficulty) {
+    const addCar = setInterval(addCargo, 10000);
+    const moveCar = setInterval(moveCargo, 700);
+    const cargoCollide = setInterval(checkCargoCollision, 100);
+  }
+  
   const timed = setInterval(() => {
-  time = updateTimer(time);
-  addText((time/10).toString());
-  }, 100);
+    if (!dead) {
+      time = updateTimer(time);
+      addText((time/10).toString());
+      }
+    }
+    , 100);
   // const diff = setInterval(changeSpeed(move), 10);
 }
 else {
   // xval = 0;
+  
   setInterval(clear, 20);
   clearInterval(move);
   clearInterval(check);
@@ -217,16 +239,23 @@ else {
   clearInterval(add);
   clearInterval(addCar);
   clearInterval(moveCar);
-  
+  clearInterval(timed);
 }
+
+onInput("k", () => {
+  difficulty = false;
+});
+
+onInput("i", () => {
+  difficulty = true;
+});
 
 function updateTimer(timer) {
-  timer += 1;
-  return timer;
-}
+  if (!dead) {
+    timer += 1;
+    return timer;
+  }
+  }
 
 afterInput(() => {
-  // addText(difficulty.toString());
-//   clearInterval(interval);
-//   const move = setInterval(moveMissile, difficulty)
 })
