@@ -1,11 +1,21 @@
 /*
-First time? Check out the tutorial game:
-https://sprig.hackclub.com/gallery/getting_started
+
+Sprig Space Game:
+
+Press a and d to move the spaceship left and right to avoid the missiles!
+Land on the intershapce helipads to temeporarily get away from the missiles!
+See how long you can last and up the difficulty by disabling helipads!
+
+Buttons:
+ - a: Move spaceship left.
+ - d: Move the spaceship right.
+ - i: Enable difficult mode and disable helipads.
+ - k: Disable difficult mode and enable helipads.
+ - w: Restart the game once you inevitably lose.
 
 @title: Space Game
-@author: 
-@tags: []
-@addedOn: 2024-08-03
+@author: Abhimanyu Chaudhary
+@addedOn: 2024-08-04
 */
 
 const player = "p"
@@ -154,7 +164,8 @@ function checkCargoCollision() {
 
     for(let xval = 0; xval < 5; xval++) {
       for(let yval = 0; yval < 6; yval++) {
-         if (getTile(xval, yval).some(sprite => sprite.type === missile)) clearTile(xval, yval);
+        if (getTile(xval, yval).some(sprite => sprite.type === missile)) checkCollision();
+        if (getTile(xval, yval).some(sprite => sprite.type === missile)) clearTile(xval, yval);
       }
     }
   }
