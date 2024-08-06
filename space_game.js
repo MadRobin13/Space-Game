@@ -22,6 +22,7 @@ const player = "p"
 const cargo = "c";
 const missile = "m";
 const explosion = "e";
+const space = "s";
 const boom = tune`
 48.62236628849271,
 48.62236628849271: F4/48.62236628849271 + C4-48.62236628849271 + E4^48.62236628849271 + D5-48.62236628849271 + C5-48.62236628849271,
@@ -36,6 +37,38 @@ const boom = tune`
 const move = tune`
 107.52688172043011: A4^107.52688172043011 + G4-107.52688172043011,
 3333.3333333333335`;
+const music1 = tune`
+3750: F4~3750,
+3750: G4~3750,
+3750: A4~3750,
+3750,
+3750: B4~3750,
+3750: G4~3750,
+3750: E4~3750,
+3750: F4~3750,
+3750: G4~3750,
+3750: C5~3750,
+3750,
+3750: G4~3750,
+3750: F4~3750,
+3750: E4~3750,
+67500`;
+const music2 = tune`
+500: D5~500,
+500: C5~500,
+500: D5~500,
+500: C5~500,
+500: D5~500,
+500: C5~500,
+500: D5~500,
+500: C5~500,
+500: D5~500,
+500: C5~500,
+500: D5~500,
+500: C5~500,
+500: D5~500,
+500: C5~500,
+9000`;
 
 setLegend(
   [player, bitmap`
@@ -105,7 +138,24 @@ setLegend(
 0666669669666660
 0006696966696600
 6069666666666006
-0006066000000600`]
+0006066000000600`],
+  [space, bitmap`
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000200000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000002000
+0000000200000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000`]
 )
 
 setSolids([player])
@@ -113,12 +163,12 @@ setSolids([player])
 let level = 0
 const levels = [
   map`
-..m..
-.....
-.....
-.....
-..p..
-.....`,
+sssss
+sssss
+sssss
+sssss
+sssss
+sssss`,
   map`
 e`
 ]
@@ -131,6 +181,8 @@ let xval = 0;
 let changed = false;
 let difficult = false;
 let time = 0;
+
+addSprite(2, 4, player);
 
 // setPushables({
 //   [player : ]
@@ -162,10 +214,15 @@ function checkCollision() {
 function checkCargoCollision() {
   if (tilesWith(player, cargo).length === 1) {
 
+  
+    
     for(let xval = 0; xval < 5; xval++) {
       for(let yval = 0; yval < 6; yval++) {
         if (getTile(xval, yval).some(sprite => sprite.type === missile)) checkCollision();
-        if (getTile(xval, yval).some(sprite => sprite.type === missile)) clearTile(xval, yval);
+        if (getTile(xval, yval).some(sprite => sprite.type === missile)){
+          clearTile(xval, yval);
+          addSprite(xval, yval, space);
+        }
       }
     }
   }
@@ -193,11 +250,19 @@ function moveCargo() {
 }
 
 function deleteMissile() {
-  if (getTile(0, 5).length >= 1)   clearTile(0, 5);
-  if (getTile(1, 5).length >= 1)   clearTile(1, 5);
-  if (getTile(2, 5).length >= 1)   clearTile(2, 5);
-  if (getTile(3, 5).length >= 1)   clearTile(3, 5);
-  if (getTile(4, 5).length >= 1)   clearTile(4, 5);
+  if (getTile(0, 5).length >= 2)   clearTile(0, 5);
+  if (getTile(1, 5).length >= 2)   clearTile(1, 5);
+  if (getTile(2, 5).length >= 2)   clearTile(2, 5);
+  if (getTile(3, 5).length >= 2)   clearTile(3, 5);
+  if (getTile(4, 5).length >= 2)   clearTile(4, 5);
+
+  if (!dead) {
+    for(let xval = 0; xval < 5; xval++) {
+      for(let yval = 0; yval < 6; yval++) {
+        addSprite(xval, yval, space);
+      }
+    }
+  }
 }
 
 function clear() {
@@ -223,7 +288,15 @@ onInput("d", () => {
                      }
   });
 
+function addSpace() {
+  tilesWith().forEach((tile) => {
+    addSprite(tile[0], tile[1], space);
+  })
+}
+
 if (!dead) {
+  // const space = setInterval(addSpace, 20);
+  const m2 = setInterval(() => {playTune(music2)}, 7000);
   let move = setInterval(moveMissiles, 700);
   const check = setInterval(checkCollision, 20);
   const deleteTheMissiles = setInterval(deleteMissile, 20);
@@ -244,6 +317,7 @@ else {
   // xval = 0;
   
   setInterval(clear, 20);
+  clearInterval(m2);
   clearInterval(move);
   clearInterval(check);
   clearInterval(deleteTheMissiles);
