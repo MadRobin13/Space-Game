@@ -38,37 +38,35 @@ const move = tune`
 107.52688172043011: A4^107.52688172043011 + G4-107.52688172043011,
 3333.3333333333335`;
 const music1 = tune`
-3750: F4~3750,
-3750: G4~3750,
-3750: A4~3750,
-3750,
-3750: B4~3750,
-3750: G4~3750,
-3750: E4~3750,
-3750: F4~3750,
-3750: G4~3750,
-3750: C5~3750,
-3750,
-3750: G4~3750,
-3750: F4~3750,
-3750: E4~3750,
-67500`;
+2307.6923076923076: F4~2307.6923076923076,
+2307.6923076923076: G4~2307.6923076923076,
+2307.6923076923076: A4~2307.6923076923076,
+2307.6923076923076: B4~2307.6923076923076,
+2307.6923076923076: G4~2307.6923076923076,
+2307.6923076923076: F4~2307.6923076923076,
+2307.6923076923076: E4~2307.6923076923076,
+2307.6923076923076: F4~2307.6923076923076,
+2307.6923076923076: C5~2307.6923076923076,
+2307.6923076923076: G4~2307.6923076923076,
+2307.6923076923076: F4~2307.6923076923076,
+2307.6923076923076: E4~2307.6923076923076,
+46153.846153846156`;
 const music2 = tune`
-500: D5~500,
-500: C5~500,
-500: D5~500,
-500: C5~500,
-500: D5~500,
-500: C5~500,
-500: D5~500,
-500: C5~500,
-500: D5~500,
-500: C5~500,
-500: D5~500,
-500: C5~500,
-500: D5~500,
-500: C5~500,
-9000`;
+461.53846153846155: D5~461.53846153846155,
+461.53846153846155: C5~461.53846153846155,
+461.53846153846155: D5~461.53846153846155,
+461.53846153846155: C5~461.53846153846155,
+461.53846153846155: D5~461.53846153846155,
+461.53846153846155: C5~461.53846153846155,
+461.53846153846155: D5~461.53846153846155,
+461.53846153846155: C5~461.53846153846155,
+461.53846153846155: D5~461.53846153846155,
+461.53846153846155: C5~461.53846153846155,
+461.53846153846155: D5~461.53846153846155,
+461.53846153846155: C5~461.53846153846155,
+461.53846153846155: D5~461.53846153846155,
+461.53846153846155: C5~461.53846153846155,
+8307.692307692309`;
 
 setLegend(
   [player, bitmap`
@@ -90,20 +88,20 @@ setLegend(
 ................`],
   [cargo, bitmap`
 ................
-.....000000.....
-...30LLLLLL03...
+................
+...3.LLLLLL.3...
 ...CLLLLLLLLC...
-..0LL6LLLL6LL0..
-.0LLL6LLLL6LLL0.
-.0LLL6LLLL6LLL0.
-.0LLL666666LLL0.
-.0LLL6FFFF6LLL0.
-.0LLL6LLLL6LLL0.
-.0LLL6LLLL6LLL0.
-..03LFLLLLFL30..
+...LL6LLLL6LL...
+..LLL6LLLL6LLL..
+..LLL6LLLL6LLL..
+..LLL666666LLL..
+..LLL6FFFF6LLL..
+..LLL6LLLL6LLL..
+..LLL6LLLL6LLL..
+...3LFLLLLFL3...
 ...CLLLLLLLLC...
-....0LLLLLL0....
-.....000000.....
+.....LLLLLL.....
+................
 ................`],
   [missile, bitmap`
 ....9.9..9.9....
@@ -181,6 +179,7 @@ let xval = 0;
 let changed = false;
 let difficult = false;
 let time = 0;
+let speed = 700;
 
 addSprite(2, 4, player);
 
@@ -296,15 +295,26 @@ function addSpace() {
 
 if (!dead) {
   // const space = setInterval(addSpace, 20);
-  const m2 = setInterval(() => {playTune(music2)}, 7000);
-  let move = setInterval(moveMissiles, 700);
+  playTune(music1);
+  playTune(music2);
+  const m2 = setInterval(() => {playTune(music2)}, 6840);
+  const m1 = setInterval(() => {playTune(music1)}, 27900)
+  let move = setInterval(() => {
+    moveMissiles();
+    }
+    , speed);
+  const update = setInterval(() => {
+    clearInterval(move);
+        if (speed >= 100) speed -= 10;
+    move = setInterval(moveMissiles, speed);
+  }, 10000)
   const check = setInterval(checkCollision, 20);
   const deleteTheMissiles = setInterval(deleteMissile, 20);
   const add = setInterval(addMissile, 700);
   const addCar = setInterval(addCargo, 10000);
   const moveCar = setInterval(moveCargo, 700);
   const cargoCollide = setInterval(checkCargoCollision, 100);
-  const timed = setInterval(() => {
+  const timed = setInterval(() => { 
     if (!dead) {
       time = updateTimer(time);
       addText((time/10).toString());
@@ -315,9 +325,9 @@ if (!dead) {
 }
 else {
   // xval = 0;
-  
   setInterval(clear, 20);
   clearInterval(m2);
+  clearInterval(m1);
   clearInterval(move);
   clearInterval(check);
   clearInterval(deleteTheMissiles);
