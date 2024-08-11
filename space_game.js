@@ -19,7 +19,7 @@ Buttons:
 */
 
 const player = "p"
-const cargo = "c";
+const helipad = "h";
 const missile = "m";
 const explosion = "e";
 const space = "s";
@@ -38,35 +38,19 @@ const move = tune`
 107.52688172043011: A4^107.52688172043011 + G4-107.52688172043011,
 3333.3333333333335`;
 const music1 = tune`
-2307.6923076923076: F4~2307.6923076923076,
-2307.6923076923076: G4~2307.6923076923076,
-2307.6923076923076: A4~2307.6923076923076,
-2307.6923076923076: B4~2307.6923076923076,
-2307.6923076923076: G4~2307.6923076923076,
-2307.6923076923076: F4~2307.6923076923076,
-2307.6923076923076: E4~2307.6923076923076,
-2307.6923076923076: F4~2307.6923076923076,
+2307.6923076923076: F4~2307.6923076923076 + D5~2307.6923076923076,
+2307.6923076923076: G4~2307.6923076923076 + C5~2307.6923076923076,
+2307.6923076923076: A4~2307.6923076923076 + D5~2307.6923076923076,
+2307.6923076923076: C5~2307.6923076923076,
+2307.6923076923076: G4~2307.6923076923076 + E5~2307.6923076923076,
+2307.6923076923076: F4~2307.6923076923076 + C5~2307.6923076923076,
+2307.6923076923076: E4~2307.6923076923076 + D5~2307.6923076923076,
+2307.6923076923076: F4~2307.6923076923076 + C5~2307.6923076923076,
 2307.6923076923076: C5~2307.6923076923076,
 2307.6923076923076: G4~2307.6923076923076,
 2307.6923076923076: F4~2307.6923076923076,
 2307.6923076923076: E4~2307.6923076923076,
 46153.846153846156`;
-const music2 = tune`
-461.53846153846155: D5~461.53846153846155,
-461.53846153846155: C5~461.53846153846155,
-461.53846153846155: D5~461.53846153846155,
-461.53846153846155: C5~461.53846153846155,
-461.53846153846155: D5~461.53846153846155,
-461.53846153846155: C5~461.53846153846155,
-461.53846153846155: D5~461.53846153846155,
-461.53846153846155: C5~461.53846153846155,
-461.53846153846155: D5~461.53846153846155,
-461.53846153846155: C5~461.53846153846155,
-461.53846153846155: D5~461.53846153846155,
-461.53846153846155: C5~461.53846153846155,
-461.53846153846155: D5~461.53846153846155,
-461.53846153846155: C5~461.53846153846155,
-8307.692307692309`;
 
 setLegend(
   [player, bitmap`
@@ -86,22 +70,22 @@ setLegend(
 ................
 ................
 ................`],
-  [cargo, bitmap`
+  [helipad, bitmap`
 ................
 ................
-...3.LLLLLL.3...
-...CLLLLLLLLC...
-...LL6LLLL6LL...
-..LLL6LLLL6LLL..
-..LLL6LLLL6LLL..
-..LLL666666LLL..
-..LLL6FFFF6LLL..
-..LLL6LLLL6LLL..
-..LLL6LLLL6LLL..
-...3LFLLLLFL3...
-...CLLLLLLLLC...
+.....111111.....
+...3111111113...
+...C16111161C...
+..111611116111..
+..111611116111..
+..111666666111..
+..1116FFFF6111..
+..111611116111..
+..131611116131..
+..LC1F1111F1CL..
+...C11111111C...
+....L111111L....
 .....LLLLLL.....
-................
 ................`],
   [missile, bitmap`
 ....9.9..9.9....
@@ -173,6 +157,7 @@ e`
 
 level = 0;
 setMap(levels[level]);
+const m1 = playTune(music1, Infinity);
 let count = 0
 let dead = false;
 let xval = 0;
@@ -202,6 +187,7 @@ function checkCollision() {
       level = 1;
       setMap(levels[level]);
       clearText();
+      m1.end();
       count += 1;
     }
   }
@@ -210,8 +196,8 @@ function checkCollision() {
   }
 }
 
-function checkCargoCollision() {
-  if (tilesWith(player, cargo).length === 1) {
+function checkHelipadLanding() {
+  if (tilesWith(player, helipad).length === 1) {
 
   
     
@@ -235,17 +221,17 @@ function addMissile() {
   }
 }
 
-function addCargo() {
+function addHelipad() {
     let yval = 0;
     xval = Math.floor(Math.random() * 5);
   if (!dead) {
-    if (!difficult) addSprite(xval, yval, cargo);
+    if (!difficult) addSprite(xval, yval, helipad);
   }
 }
 
-function moveCargo() {
-  getAll(cargo).forEach((cargo) => {
-  cargo.y += 1; });
+function moveHelipad() {
+  getAll(helipad).forEach((helipad) => {
+  helipad.y += 1; });
 }
 
 function deleteMissile() {
@@ -269,13 +255,17 @@ function clear() {
 }
 
 onInput("a", () => {
-  if (!dead) if (getFirst(player).x > -1) getFirst(player).x -= 1;
-  playTune(move);
+  if (!dead) if (getFirst(player).x > -1) {
+    getFirst(player).x -= 1;
+    playTune(move);
+  }
 });
 
 onInput("d", () => {
-  if (!dead) if (getFirst(player).x < 5) getFirst(player).x += 1;
-  playTune(move);
+  if (!dead) if (getFirst(player).x < 5) {
+    getFirst(player).x += 1;
+    playTune(move);
+  }
 });
 
   onInput("w", () => {
@@ -284,6 +274,8 @@ onInput("d", () => {
       dead = false;
       count = 0;
       setMap(levels[level]);
+      addSprite(2, 4, player);
+      playTune(music1, Infinity);
                      }
   });
 
@@ -295,10 +287,6 @@ function addSpace() {
 
 if (!dead) {
   // const space = setInterval(addSpace, 20);
-  playTune(music1);
-  playTune(music2);
-  const m2 = setInterval(() => {playTune(music2)}, 6840);
-  const m1 = setInterval(() => {playTune(music1)}, 27900)
   let move = setInterval(() => {
     moveMissiles();
     }
@@ -307,13 +295,21 @@ if (!dead) {
     clearInterval(move);
         if (speed >= 100) speed -= 10;
     move = setInterval(moveMissiles, speed);
-  }, 10000)
+  }, 10000);
+      let mplayer;
+  const m = setInterval(() => {
+    if (!dead) mplayer = playTune(music1);
+    }, 28630);
+  const mcheck = setInterval(() =>
+    {
+      if (dead) clearInterval(m);
+    }, 20);
   const check = setInterval(checkCollision, 20);
   const deleteTheMissiles = setInterval(deleteMissile, 20);
   const add = setInterval(addMissile, 700);
-  const addCar = setInterval(addCargo, 10000);
-  const moveCar = setInterval(moveCargo, 700);
-  const cargoCollide = setInterval(checkCargoCollision, 100);
+  const addHeli = setInterval(addHelipad, 10000);
+  const moveHeli = setInterval(moveHelipad, 700);
+  const helipadLand = setInterval(checkHelipadLanding, 100);
   const timed = setInterval(() => { 
     if (!dead) {
       time = updateTimer(time);
@@ -326,23 +322,21 @@ if (!dead) {
 else {
   // xval = 0;
   setInterval(clear, 20);
-  clearInterval(m2);
-  clearInterval(m1);
   clearInterval(move);
   clearInterval(check);
   clearInterval(deleteTheMissiles);
   clearInterval(add);
-  clearInterval(addCar);
-  clearInterval(moveCar);
+  clearInterval(addHeli);
+  clearInterval(moveHeli);
   clearInterval(timed);
 }
 
 onInput("k", () => {
-  difficult = false;
+  if (!dead) difficult = false;
 });
 
 onInput("i", () => {
-  difficult = true;
+  if (!dead) difficult = true;
 });
 
 function updateTimer(timer) {
