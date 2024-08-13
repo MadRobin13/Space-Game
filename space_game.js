@@ -38,19 +38,38 @@ const move = tune`
 107.52688172043011: A4^107.52688172043011 + G4-107.52688172043011,
 3333.3333333333335`;
 const music1 = tune`
-2307.6923076923076: F4~2307.6923076923076 + D5~2307.6923076923076,
-2307.6923076923076: G4~2307.6923076923076 + C5~2307.6923076923076,
-2307.6923076923076: A4~2307.6923076923076 + D5~2307.6923076923076,
-2307.6923076923076: C5~2307.6923076923076,
-2307.6923076923076: G4~2307.6923076923076 + E5~2307.6923076923076,
-2307.6923076923076: F4~2307.6923076923076 + C5~2307.6923076923076,
-2307.6923076923076: E4~2307.6923076923076 + D5~2307.6923076923076,
-2307.6923076923076: F4~2307.6923076923076 + C5~2307.6923076923076,
-2307.6923076923076: C5~2307.6923076923076,
-2307.6923076923076: G4~2307.6923076923076,
-2307.6923076923076: F4~2307.6923076923076,
-2307.6923076923076: E4~2307.6923076923076,
-46153.846153846156`;
+230.76923076923077: F4~230.76923076923077 + D5~230.76923076923077,
+230.76923076923077: G4~230.76923076923077 + C5~230.76923076923077,
+230.76923076923077: A4~230.76923076923077 + D5~230.76923076923077,
+230.76923076923077: C5~230.76923076923077,
+230.76923076923077: G4~230.76923076923077 + E5~230.76923076923077,
+230.76923076923077: F4~230.76923076923077 + C5~230.76923076923077,
+230.76923076923077: E4~230.76923076923077 + D5~230.76923076923077,
+230.76923076923077: F4~230.76923076923077 + C5~230.76923076923077,
+230.76923076923077: C5~230.76923076923077,
+230.76923076923077: G4~230.76923076923077,
+230.76923076923077: F4~230.76923076923077,
+230.76923076923077: E4~230.76923076923077,
+230.76923076923077: F4~230.76923076923077,
+230.76923076923077: G5~230.76923076923077 + A4~230.76923076923077,
+230.76923076923077: F4~230.76923076923077 + C5~230.76923076923077,
+230.76923076923077: G4~230.76923076923077 + E5~230.76923076923077,
+230.76923076923077: F5~230.76923076923077 + B4~230.76923076923077,
+230.76923076923077: A4~230.76923076923077 + D5~230.76923076923077,
+230.76923076923077: F5~230.76923076923077 + C5~230.76923076923077,
+230.76923076923077: D5~230.76923076923077 + F4~230.76923076923077,
+230.76923076923077: G4~230.76923076923077 + E5~230.76923076923077,
+230.76923076923077: D5~230.76923076923077,
+230.76923076923077: C5~230.76923076923077,
+230.76923076923077: D5~230.76923076923077,
+230.76923076923077: E5~230.76923076923077,
+230.76923076923077: A4~230.76923076923077,
+230.76923076923077: B4~230.76923076923077,
+230.76923076923077: C5~230.76923076923077,
+230.76923076923077: F5~230.76923076923077 + G4~230.76923076923077,
+230.76923076923077,
+230.76923076923077: E5~230.76923076923077 + B4~230.76923076923077,
+230.76923076923077: C5~230.76923076923077`;
 
 setLegend(
   [player, bitmap`
@@ -155,22 +174,16 @@ sssss`,
 e`
 ]
 
+
 level = 0;
 setMap(levels[level]);
-const m1 = playTune(music1, Infinity);
-let count = 0
+const count = 0
 let dead = false;
-let xval = 0;
-let changed = false;
 let difficult = false;
 let time = 0;
 let speed = 700;
 
 addSprite(2, 4, player);
-
-// setPushables({
-//   [player : ]
-// });
 
 
 function moveMissiles() {
@@ -182,13 +195,15 @@ function checkCollision() {
     if (tilesWith(missile, player).length === 1) 
   {
     if (count < 1) {
+      m1.end();
       playTune(boom);
       dead = true;
       level = 1;
       setMap(levels[level]);
       clearText();
-      m1.end();
-      count += 1;
+      time = 0;
+      speed = 700;
+      const count = 1;
     }
   }
   else {
@@ -268,16 +283,14 @@ onInput("d", () => {
   }
 });
 
-  onInput("w", () => {
-    if (level === 1) {
-      level = 0;
-      dead = false;
-      count = 0;
-      setMap(levels[level]);
-      addSprite(2, 4, player);
-      playTune(music1, Infinity);
-                     }
-  });
+onInput("w", () => {
+  level = 0;
+  dead = false;
+  const count = 0;
+  setMap(levels[level]);
+  addSprite(2, 4, player);
+  const check = setInterval(checkCollision, 20);
+});
 
 function addSpace() {
   tilesWith().forEach((tile) => {
@@ -285,8 +298,10 @@ function addSpace() {
   })
 }
 
+let m1;
+let mbool = false;
+
 if (!dead) {
-  // const space = setInterval(addSpace, 20);
   let move = setInterval(() => {
     moveMissiles();
     }
@@ -297,13 +312,19 @@ if (!dead) {
     move = setInterval(moveMissiles, speed);
   }, 10000);
       let mplayer;
-  const m = setInterval(() => {
-    if (!dead) mplayer = playTune(music1);
-    }, 28630);
-  const mcheck = setInterval(() =>
-    {
-      if (dead) clearInterval(m);
-    }, 20);
+  const mstart = setInterval(() => {
+    if (!dead && !mbool) {
+      m1 = playTune(music1, Infinity);
+      mbool = true;
+    }
+  }, 10);
+
+  const mstop = setInterval(() => {
+    if (dead && mbool) {
+      m1.end();
+      mbool = false;
+    }
+  }, 10);
   const check = setInterval(checkCollision, 20);
   const deleteTheMissiles = setInterval(deleteMissile, 20);
   const add = setInterval(addMissile, 700);
@@ -317,13 +338,11 @@ if (!dead) {
       }
     }
     , 100);
-  // const diff = setInterval(changeSpeed(move), 10);
 }
 else {
-  // xval = 0;
   setInterval(clear, 20);
+  clearInterval(m);
   clearInterval(move);
-  clearInterval(check);
   clearInterval(deleteTheMissiles);
   clearInterval(add);
   clearInterval(addHeli);
