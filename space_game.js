@@ -11,11 +11,11 @@ Buttons:
  - d: Move the spaceship right.
  - i: Enable difficult mode and disable helipads.
  - k: Disable difficult mode and enable helipads.
- - w: Restart the game once you inevitably lose.
+ - w: Restart the game once you inevitably hit a missile.
 
 @title: Space Game
 @author: Abhimanyu Chaudhary
-@addedOn: 2024-08-04
+@addedOn: 2024-08-13
 */
 
 const player = "p"
@@ -182,6 +182,8 @@ let dead = false;
 let difficult = false;
 let time = 0;
 let speed = 700;
+let m1;
+let mbool = false;
 
 addSprite(2, 4, player);
 
@@ -284,12 +286,14 @@ onInput("d", () => {
 });
 
 onInput("w", () => {
-  level = 0;
-  dead = false;
-  const count = 0;
-  setMap(levels[level]);
-  addSprite(2, 4, player);
-  const check = setInterval(checkCollision, 20);
+  if (dead) {
+    level = 0;
+    dead = false;
+    const count = 0;
+    setMap(levels[level]);
+    addSprite(2, 4, player);
+    const check = setInterval(checkCollision, 20);
+  }
 });
 
 function addSpace() {
@@ -297,9 +301,6 @@ function addSpace() {
     addSprite(tile[0], tile[1], space);
   })
 }
-
-let m1;
-let mbool = false;
 
 if (!dead) {
   let move = setInterval(() => {
@@ -315,6 +316,7 @@ if (!dead) {
   const mstart = setInterval(() => {
     if (!dead && !mbool) {
       m1 = playTune(music1, Infinity);
+      clearText();
       mbool = true;
     }
   }, 10);
@@ -322,6 +324,7 @@ if (!dead) {
   const mstop = setInterval(() => {
     if (dead && mbool) {
       m1.end();
+      addText("You Died!", {y:3, color:color`0`});
       mbool = false;
     }
   }, 10);
@@ -334,7 +337,7 @@ if (!dead) {
   const timed = setInterval(() => { 
     if (!dead) {
       time = updateTimer(time);
-      addText((time/10).toString());
+      addText((time/10).toString(), {color:color`2`});
       }
     }
     , 100);
@@ -363,7 +366,4 @@ function updateTimer(timer) {
     timer += 1;
     return timer;
   }
-  }
-
-afterInput(() => {
-})
+}
